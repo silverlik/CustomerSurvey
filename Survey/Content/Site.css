@@ -22,3 +22,44 @@ select,
 textarea {
     max-width: 280px;
 }
+.survey-title-cell .title-text {
+    word-wrap: break-word;
+    white-space: normal;
+    display: block;
+}
+.survey-header {
+    background-color: #2c7db7 !important;
+    height: 50px;
+    vertical-align: central;
+    text-align: center;
+    color: white;
+    padding: 10px;
+}
+.survey-question {
+    margin: 10px 0 10px 0;
+    font-size: large;
+    color: #2c7db7;
+}
+input[type='radio'] , input[type='checkbox'] 
+{
+    /*margin-right: 10px;*/
+    margin-left: 10px;
+}
+.survey-title-container {
+    min-height: 20px;
+    overflow: hidden;
+}
+
+input[type='button'], input[type='submit']
+{
+    padding: 7px 10px !important;
+    background: #2c7db7 !important;
+    float: left;
+    margin: 5px;
+}
+.survey-comment{
+    
+    width: 100% !important;
+    padding: 20px;
+    resize: both;
+}

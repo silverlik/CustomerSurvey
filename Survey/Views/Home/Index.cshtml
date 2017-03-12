@@ -4,55 +4,58 @@
     $(document).ready(function() {
         $("#btnSubmit").onclick(function() {
             alert("Button is pressed!");
-        })
+        });
     })
 </script>
 @{
-    ViewBag.Title = "Survey";
+    ViewBag.Title = "Customer Satisfaction Survey";
 }
 
-@{
-    for (int i = 0; i < Model.Count; i++)
-    {
-        var m = Model[i];
-        <div >@m.QuestionId . @m.QuestionTitle </div>
-        switch (m.QuestionType)
+<div >
+    <div class="survey-header survey-title-cell">@ViewBag.Title</div>
+    @{
+        for (int i = 0; i < Model.Count; i++)
         {
-            case (int) QuestionTypes.Selection:
+            var m = Model[i];
+            <div class="survey-question">@m.QuestionId . @m.QuestionTitle </div>
+            switch (m.QuestionType)
+            {
+                case (int) QuestionTypes.Selection:
 
-                foreach(var answer in Model[i].Answers)
-                {
-                    @Html.RadioButtonFor(a => answer.AnswerId, answer.AnswerId, new {GroupId = i})
-                    @answer.Label
-                }
-                break;
+                    foreach (var answer in Model[i].Answers)
+                    {
+                        @Html.RadioButtonFor(a => answer.AnswerId, answer.AnswerId, new {GroupId = i})
+                        @answer.Label
+                    }
+                    break;
 
-            case (int) QuestionTypes.SingleChoice:
-                foreach (var answer in m.Answers)
-                {
-                    <div>
-                        @Html.RadioButtonFor(a => answer.AnswerId, answer.AnswerId, new {GroupName = answer.Label})
-                        &nbsp;@answer.Label
-                    </div>
-                }
-                break;
-            case (int) QuestionTypes.MultipleChoice:
-                foreach (var answer in m.Answers)
-                {
-                    <div>
-                        @Html.CheckBoxFor(a => answer.Selected)
-                        &nbsp;@answer.Label
-                    </div>
-                }
-                break;
-            case (int) QuestionTypes.Commentary:
-                <div style="width: 40%"> @Html.TextAreaFor(model => m.Comment)</div>
-                break;
+                case (int) QuestionTypes.SingleChoice:
+                    foreach (var answer in m.Answers)
+                    {
+                        <div>
+                            @Html.RadioButtonFor(a => answer.AnswerId, answer.AnswerId, new {GroupName = answer.Label})
+                            &nbsp;@answer.Label
+                        </div>
+                    }
+                    break;
+                case (int) QuestionTypes.MultipleChoice:
+                    foreach (var answer in m.Answers)
+                    {
+                        <div>
+                            @Html.CheckBoxFor(a => answer.Selected)
+                            &nbsp;@answer.Label
+                        </div>
+                    }
+                    break;
+                case (int) QuestionTypes.Commentary:
+                    <div class="survey-comment"> @Html.TextAreaFor(model => m.Comment)</div>
+                    break;
+            }
         }
+
+        <input type="button" value="Submit" id="btnSubmit"/>
+
+        <br/><br/>
+
     }
-
-    <input type="button" value="Submit" id="btnSubmit"/>
-
-
-
-}
+</div>
