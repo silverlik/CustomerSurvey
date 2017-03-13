@@ -1,0 +1,20 @@
+﻿@model Survey.Models.StatisticsModel
+@{
+    ViewBag.Title = "Statistics";
+}
+<br/>
+<br/>
+
+<div class="survey-header survey-title-cell">@ViewBag.Title</div>
+<div class="survey-question"> Survey completed: @Model.Respondents </div>
+
+<ol>
+    @foreach (var item in Model.QuestionPopularAnswers)
+    {
+        <li class="survey-question">
+            @item.Key : @item.Value
+        </li>
+
+
+    }
+</ol>

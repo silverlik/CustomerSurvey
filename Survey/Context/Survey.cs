@@ -138,9 +138,9 @@ namespace Survey.Context
 
         public FakeCustomerSurveyDbContext()
         {
-            Answers = new FakeDbSet<Answer>("QuestionId", "AnswerId", "Label");
+            Answers = new FakeDbSet<Answer>("AnswerId");
             Questions = new FakeDbSet<Question>("QuestionId");
-            Respons = new FakeDbSet<Respons>("ResponseId");
+            Respons = new FakeDbSet<Respons>("Id");
         }
 
         public int SaveChangesCount { get; private set; }
@@ -464,9 +464,9 @@ namespace Survey.Context
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.28.0.0")]
     public class Answer
     {
-        public int QuestionId { get; set; } // QuestionId (Primary key)
+        public int QuestionId { get; set; } // QuestionId
         public int AnswerId { get; set; } // AnswerId (Primary key)
-        public string Label { get; set; } // Label (Primary key) (length: 100)
+        public string Label { get; set; } // Label (length: 100)
 
         // Foreign keys
         public virtual Question Question { get; set; } // FK_Answers_Questions
@@ -481,7 +481,7 @@ namespace Survey.Context
         public int QuestionType { get; set; } // QuestionType
 
         // Reverse navigation
-        public virtual System.Collections.Generic.ICollection<Answer> Answers { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<Answer> Answers { get; set; } // Answers.FK_Answers_Questions
 
         public Question()
         {
@@ -494,10 +494,10 @@ namespace Survey.Context
     public class Respons
     {
         public int QuestionId { get; set; } // QuestionId
-        public int AnswerId { get; set; } // AnswerId
-        public int? Selected { get; set; } // Selected
-        public string Comment { get; set; } // Comment (length: 500)
-        public int ResponseId { get; set; } // ResponseId (Primary key)
+        public string Response { get; set; } // Response (length: 300)
+        public int ResponseId { get; set; } // ResponseId
+        public string UserName { get; set; } // UserName (length: 50)
+        public int Id { get; set; } // Id (Primary key)
     }
 
     #endregion
@@ -516,11 +516,11 @@ namespace Survey.Context
         public AnswerConfiguration(string schema)
         {
             ToTable("Answers", schema);
-            HasKey(x => new { x.QuestionId, x.AnswerId, x.Label });
+            HasKey(x => x.AnswerId);
 
-            Property(x => x.QuestionId).HasColumnName(@"QuestionId").HasColumnType("int").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.QuestionId).HasColumnName(@"QuestionId").HasColumnType("int").IsRequired();
             Property(x => x.AnswerId).HasColumnName(@"AnswerId").HasColumnType("int").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            Property(x => x.Label).HasColumnName(@"Label").HasColumnType("nvarchar").IsRequired().HasMaxLength(100).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Label).HasColumnName(@"Label").HasColumnType("nvarchar").IsRequired().HasMaxLength(100);
 
             // Foreign keys
             HasRequired(a => a.Question).WithMany(b => b.Answers).HasForeignKey(c => c.QuestionId).WillCascadeOnDelete(false); // FK_Answers_Questions
@@ -559,13 +559,13 @@ namespace Survey.Context
         public ResponsConfiguration(string schema)
         {
             ToTable("Responses", schema);
-            HasKey(x => x.ResponseId);
+            HasKey(x => x.Id);
 
             Property(x => x.QuestionId).HasColumnName(@"QuestionId").HasColumnType("int").IsRequired();
-            Property(x => x.AnswerId).HasColumnName(@"AnswerId").HasColumnType("int").IsRequired();
-            Property(x => x.Selected).HasColumnName(@"Selected").HasColumnType("int").IsOptional();
-            Property(x => x.Comment).HasColumnName(@"Comment").HasColumnType("nvarchar").IsOptional().HasMaxLength(500);
-            Property(x => x.ResponseId).HasColumnName(@"ResponseId").HasColumnType("int").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
+            Property(x => x.Response).HasColumnName(@"Response").HasColumnType("nvarchar").IsOptional().HasMaxLength(300);
+            Property(x => x.ResponseId).HasColumnName(@"ResponseId").HasColumnType("int").IsRequired();
+            Property(x => x.UserName).HasColumnName(@"UserName").HasColumnType("nvarchar").IsOptional().HasMaxLength(50);
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("int").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
         }
     }
 

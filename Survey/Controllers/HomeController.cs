@@ -7,6 +7,7 @@ using AutoMapper;
 using Survey.AutoMapper;
 using Survey.Context;
 using Survey.Models;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace Survey.Controllers
 {
@@ -44,6 +45,84 @@ namespace Survey.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        
+        [HttpPost]
+        public ActionResult SubmitSurvey(List<QuestionModel> model=null)
+        {
+            using (var db = new CustomerSurveyDbContext())
+            {
+                var data = db.Respons.ToList();
+                var responseId = data.OrderByDescending(r => r.ResponseId).FirstOrDefault()?.ResponseId + 1;
+                string response="";
+              //  var user = HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+                foreach (var m in model)
+                {
+                    
+                    if (m.QuestionType == (int) QuestionTypes.Selection ||
+                        m.QuestionType == (int) QuestionTypes.SingleChoice)
+                    {
+                        response = m.SelectedValue.ToString();
+
+                    }
+                    if (m.QuestionType == (int) QuestionTypes.MultipleChoice)
+                    {
+                        var answers = m.Answers.Where(a => a.Selected).Select(a => a.AnswerId.ToString());
+                        response = string.Join(",", answers);
+                        
+                    }
+                    if (m.QuestionType == (int) QuestionTypes.Commentary)
+                    {
+                        response = m.Comment;
+                    }
+                    db.Respons.Add(new Respons()
+                    {
+                        QuestionId = m.QuestionId + 1,
+                        Response = response,
+                        ResponseId = responseId??1,
+                        UserName = ""
+                    });
+                }
+                try
+                    {
+                        
+                        db.SaveChanges();
+
+                    }
+                    catch(Exception e)
+                        {
+                            Console.Write(e.StackTrace);
+                                throw;
+                         }
+                
+                
+                
+
+            }
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Statistics()
+        {
+
+            using (var db = new CustomerSurveyDbContext())
+            {
+               var model= new StatisticsModel();
+                model.Respondents = db.Respons.Select(r => r.ResponseId).Distinct().Count();
+                model.QuestionPopularAnswers = new Dictionary<string, string>();
+                var questions = db.Questions.Count();
+                var questionIds = db.Questions.Select(q => q.QuestionId);
+                foreach (var id in questionIds)
+                {
+                    
+                    model.QuestionPopularAnswers.Add(db.Questions.First(q=>q.QuestionId==id).QuestionTitle,
+                        db.Respons.Where(r=>r.QuestionId==id).Count()+ " answers." );
+                }
+                
+                return View(model);
+            }
+            
         }
     }
 }

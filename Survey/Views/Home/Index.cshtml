@@ -1,61 +1,113 @@
-﻿@model List<Survey.Models.QuestionModel>
+﻿@using System.Activities.Expressions
+@model List<Survey.Models.QuestionModel>
 
-<script>
-    $(document).ready(function() {
-        $("#btnSubmit").onclick(function() {
-            alert("Button is pressed!");
-        });
-    })
-</script>
+
 @{
     ViewBag.Title = "Customer Satisfaction Survey";
 }
+<script src="../../Scripts/jquery-3.1.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#btnSubmit").click(function() {
+            $.ajax(
+            {
+                url: '@Url.Action("SubmitSurvey","Home")',
+                data: result = $('#frmSurvey').serialize(),
+                dataType: "json",
+                type: "POST"
+            });
+        });
+        $('input[type=radio]').click(function(item) {
+            //  alert("Hello!" + item.id);
+            var numberpattern = /\d+/g;
+            var index = item.target.name.match(numberpattern)[0];
+            $('#SV_' + index).val(item.target.id);
+        });
+        $('input[type=checkbox').click(function(item)
+        {
+            // $('#omment')
 
+            
+        });
+        $('#Comment1').change(function(item) {
+            $('#Comment2').val($('#Comment1'.val()));
+        });
+    })
+
+</script>
 <div >
+    <br/>
+    <br/>
+
     <div class="survey-header survey-title-cell">@ViewBag.Title</div>
-    @{
+    <form id="frmSurvey"> 
+    @using (Html.BeginForm("SubmitSurvey", "Home", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true)
+
         for (int i = 0; i < Model.Count; i++)
         {
             var m = Model[i];
-            <div class="survey-question">@m.QuestionId . @m.QuestionTitle </div>
+            <div class="survey-question" id="Q_@m.QuestionId">@m.QuestionId . @m.QuestionTitle </div>            
+            @Html.HiddenFor(model => model[i].SelectedValue, new {id="SV_"+i})
+            @Html.HiddenFor(model=>model[i].QuestionType)
+            @Html.HiddenFor(model=>model[i].QuestionId)
+            @Html.HiddenFor(model => model[i].Comment, new { id = "Comment2" })
             switch (m.QuestionType)
             {
-                case (int) QuestionTypes.Selection:
+                case (int)QuestionTypes.Selection:
 
-                    foreach (var answer in Model[i].Answers)
-                    {
-                        @Html.RadioButtonFor(a => answer.AnswerId, answer.AnswerId, new {GroupId = i})
-                        @answer.Label
-                    }
+                    <div style="float: left">Not at all likely </div>
+                    <div style="float: right">Extremely likely </div>
+                    <br/><br/>
+                    <div style="margin-left: 30%">
+                        @for (var j = 0; j < Model[i].Answers.Count; j++)
+                        {
+                            @Html.RadioButtonFor(model => model[i].Answers[j].Selected, Model[i].Answers[j].AnswerId, new {id = Model[i].Answers[j].AnswerId})
+                            @Model[i].Answers[j].Label
+
+                        }
+
+                    </div>
                     break;
-
                 case (int) QuestionTypes.SingleChoice:
-                    foreach (var answer in m.Answers)
-                    {
-                        <div>
-                            @Html.RadioButtonFor(a => answer.AnswerId, answer.AnswerId, new {GroupName = answer.Label})
-                            &nbsp;@answer.Label
-                        </div>
-                    }
+                    
+                       
+
+                        for (var j = 0; j < Model[i].Answers.Count; j++)
+                        {
+                            <div>
+                                @Html.RadioButtonFor(model => model[i].Answers[j].Selected, Model[i].Answers[j].AnswerId, new {id = Model[i].Answers[j].AnswerId})
+
+                                &nbsp;@Model[i].Answers[j].Label
+                                
+                            </div>
+                        }
+                    
                     break;
+
                 case (int) QuestionTypes.MultipleChoice:
-                    foreach (var answer in m.Answers)
+                    for (var j = 0; j < Model[i].Answers.Count; j++)
                     {
                         <div>
-                            @Html.CheckBoxFor(a => answer.Selected)
-                            &nbsp;@answer.Label
+                            @Html.CheckBoxFor(model => model[i].Answers[j].Selected, new {id = Model[i].Answers[j].AnswerId})
+                            &nbsp;@Model[i].Answers[j].Label
+                            @Html.HiddenFor(model=>model[i].Answers[j].AnswerId)
                         </div>
                     }
                     break;
                 case (int) QuestionTypes.Commentary:
-                    <div class="survey-comment"> @Html.TextAreaFor(model => m.Comment)</div>
+                    <div class="survey-comment"> @Html.TextAreaFor(model => m.Comment, new {id="Comment1"})</div>
+                    
                     break;
             }
+
         }
 
-        <input type="button" value="Submit" id="btnSubmit"/>
+        <input type="submit" value="Submit" id="btnSubmit" class="btn"/>
 
         <br/><br/>
 
     }
+     </form>
 </div>

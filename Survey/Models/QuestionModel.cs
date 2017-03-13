@@ -11,7 +11,10 @@ namespace Survey.Models
         public int QuestionType { get; set; } // QuestionType
         public string Comment { get; set; }
         // Reverse navigation
-        public virtual ICollection<AnswerModel> Answers { get; set; } // Many to many mapping
+        public virtual IList<AnswerModel> Answers { get; set; }
+        public int SelectedValue { get; set; }
+
+// Many to many mapping
 
         public QuestionModel()
         {
