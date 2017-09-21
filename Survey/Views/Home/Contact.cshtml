@@ -12,6 +12,78 @@
 </address>
 
 <address>
-    <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
+    <strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br/>
     <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
 </address>
+
+<style type="text/css">
+    .dz-max-files-reached {
+        background-color: red;
+    }
+    .ui-button-text {
+        background-color: darkolivegreen;
+        float: right;
+
+    }
+</style>
+
+<body>
+@*<script src="~/Scripts/dropzone/dropzone.js"></script>
+    <link href="~/Scripts/dropzone/dropzone.css" rel="stylesheet" />*@
+<script>
+    //File Upload response from the server
+    //File Upload response from the server
+    Dropzone.options.dropzoneForm = {
+        url: "@Url.Action("SaveUploadedFile", "Home")",
+        init: function () {
+            //this.on("maxfilesexceeded", function (data) {
+            //    var res = eval('(' + data.xhr.responseText + ')');
+            //});
+            this.on("addedfile", function (file) {
+                // Create the remove button
+                var removeButton = Dropzone.createElement("<button>Remove file</button>");
+                // Capture the Dropzone instance as closure.
+                var _this = this;
+                // Listen to the click event
+                removeButton.addEventListener("click", function (e) {
+                    // Make sure the button click doesn't submit the form:
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Remove the file preview.
+                    _this.removeFile(file);
+                    // If you want to the delete the file on the server as well,
+                    // you can do the AJAX request here.
+                });
+                // Add the button to the file preview element.
+                file.previewElement.appendChild(removeButton);
+            });
+        }
+    };
+
+
+</script>
+
+
+
+<p>
+    Drag and drop to upload files or just select them from the list
+</p>
+
+<!-- Change /upload-target to your upload address -->
+@*<form action='@Url.Action("SaveUploadedFile", "Home")' method="post" enctype="multipart/form-data" class="dropzone" id="dropzoneForm1" style="width: 250px; background: none; border: 1px;"> </form>*@
+
+
+
+</body> 
+
+<div class="jumbotron">
+    <div class="dropzone" id="dropzoneForm">
+        <div class="fallback">
+            <input name="file" type="file" multiple/>
+
+        </div>
+    </div>
+    <div class="ui-button-text">
+        <input type="button" id="btnSubmit" value="Upload" />
+    </div>
+</div>
